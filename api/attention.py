@@ -4,6 +4,7 @@ from flask_restful import Api, Resource
 
 # Import the AttentionModel class from the model file
 # from model.attention import AttentionModel
+from model.attentions import AttentionModel
 
 attention_api = Blueprint('attention_api', __name__,
                           url_prefix='/api/attention')

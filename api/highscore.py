@@ -1,39 +1,62 @@
-from flask import Flask, request, jsonify
+import sqlite3
 
-app = Flask(__name__)
+def create_connection(db_file):
+    """Create a database connection to the SQLite database specified by db_file."""
+    try:
+        conn = sqlite3.connect(db_file)
+        return conn
+    except sqlite3.Error as e:
+        print(e)
+    return None
 
-# Data structure to store game scores
-scores = {}
+def create_table(conn):
+    """Create a high scores table."""
+    try:
+        c = conn.cursor()
+        c.execute("""
+            CREATE TABLE IF NOT EXISTS high_scores (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                game TEXT NOT NULL,
+                score INTEGER NOT NULL
+            )
+        """)
+        conn.commit()
+    except sqlite3.Error as e:
+        print(e)
 
+def save_high_score(conn, name, game, score):
+    """Save a high score entry to the database."""
+    try:
+        c = conn.cursor()
+        c.execute("""
+            INSERT INTO high_scores (name, game, score)
+            VALUES (?, ?, ?)
+        """, (name, game, score))
+        conn.commit()
+    except sqlite3.Error as e:
+        print(e)
 
-# Endpoint to add a new game score
-@app.route('/score', methods=['POST'])
-def add_score():
-    data = request.json
-    game_id = data.get('game_id')
-    player_name = data.get('player_name')
-    score = data.get('score')
+def get_high_scores(conn):
+    """Retrieve high scores from the database."""
+    try:
+        c = conn.cursor()
+        c.execute("""
+            SELECT name, game, score
+            FROM high_scores
+            ORDER BY score DESC
+        """)
+        return c.fetchall()
+    except sqlite3.Error as e:
+        print(e)
 
-    if not game_id or not player_name or not score:
-        return jsonify({'error': 'Missing data. Please provide game_id, player_name, and score.'}), 400
+def main():
+    database = "highscores.db"
+    conn = create_connection(database)
+    if conn is not None:
+        create_table(conn)
+    else:
+        print("Error! Cannot create the database connection.")
 
-    if game_id not in scores:
-        scores[game_id] = []
-
-    scores[game_id].append({'player_name': player_name, 'score': score})
-
-    return jsonify({'message': 'Score added successfully.'}), 201
-
-
-# Endpoint to get all scores for a particular game
-@app.route('/scores/<int:game_id>', methods=['GET'])
-def get_scores(game_id):
-    if game_id not in scores:
-        return jsonify({'error': 'No scores found for the specified game ID.'}), 404
-
-    return jsonify(scores[game_id])
-
-
-if __name__ == '__main__':
-    app.run(debug=True)
-
+if __name__ == "__main__":
+    main()
