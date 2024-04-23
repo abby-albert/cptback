@@ -1,21 +1,29 @@
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
-db = SQLAlchemy()
+# Initialize Flask app and database
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///highscores.db'  # Adjust the database URI as needed
+db = SQLAlchemy(app)
 
+# Define the HighScore model
 class HighScore(db.Model):
-    """Model for high scores."""
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), nullable=False)
-    game = db.Column(db.String(100), nullable=False)
-    score = db.Column(db.Integer, nullable=False)
+    player_name = db.Column(db.String(100), nullable=False)
+    game_name = db.Column(db.String(100), nullable=False)
+    player_score = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):
-        return f"<HighScore(name='{self.name}', game='{self.game}', score={self.score})>"
+        return f'<HighScore {self.player_name} - {self.game_name}: {self.player_score}>'
 
-from flask import Flask
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///highscores.db'
+# Import and register the highscore_api blueprint
 
-db.init_app(app)
+from highscore.py import highscore_api
+app.register_blueprint(highscore_api)
 
+if __name__ == '__main__':
+    app.run(debug=True)
