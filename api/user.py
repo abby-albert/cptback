@@ -77,40 +77,50 @@ class UserAPI:
             return f"Deleted user: {json}", 204 # use 200 to test with Postman
          
     class _Security(Resource):
-        def post(self):
+        def post(self): 
             try:
+            # this part retrieves JSON data from the request body
                 body = request.get_json()
                 if not body:
+                    # if there is no information or body it returns an error
                     return {
                         "message": "Please provide user details",
                         "data": None,
                         "error": "Bad request"
                     }, 400
                 ''' Get Data '''
+                # get the uid and pasword from the body
                 uid = body.get('uid')
-                if uid is None:
+                if uid is None: 
+                 # returns error if there is no uid
                     return {'message': f'User ID is missing'}, 400
                 password = body.get('password')
                 
                 ''' Find user '''
                 user = User.query.filter_by(_uid=uid).first()
+              # goes into the query database to find data for user
                 if user is None or not user.is_password(password):
+                    # returns error if there is no pasword or wrong pasword
                     return {'message': f"Invalid user id or password"}, 400
                 if user:
                     try:
+                        # the code below generates a jwt token for authentication
                         token = jwt.encode(
                             {"_uid": user._uid},
                             current_app.config["SECRET_KEY"],
                             algorithm="HS256"
                         )
+                        # returns a response showing the successful authentication 
                         resp = Response("Authentication for %s successful" % (user._uid))
+                        # Set JWT token as a cookie in the response
                         resp.set_cookie("jwt", token,
                                 max_age=3600,
                                 secure=True,
                                 httponly=True,
                                 path='/',
-                                samesite='None'  # This is the key part for cross-site requests
+                                samesite='None'  
 
+                                
                                 # domain="frontend.com"
                                 )
                         return resp
