@@ -18,7 +18,7 @@ class HighScore(Base):
         return f"<HighScore(name='{self.name}', game='{self.game}', score={self.score})>"
 
 # Database connection setup
-DB_URL = 'sqlite:///highscores.db'
+DB_URL = 'sqlite:///highscore.db'
 engine = create_engine(DB_URL)
 Base.metadata.create_all(engine)  # Create the database tables
 
