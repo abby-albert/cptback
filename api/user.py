@@ -11,35 +11,6 @@ from model.users import User
 
 user_api = Blueprint('user_api', __name__,
                    url_prefix='/api/users')
-# Import necessary modules
-from flask import Blueprint, request, jsonify
-from model.users import User
-
-# Create a blueprint for user-related endpoints
-user_api = Blueprint('user_api', __name__, url_prefix='/api/users')
-
-# Define a route for user signup
-@user_api.route('/signup', methods=['POST'])
-def signup():
-    # Get data from the request
-    data = request.json
-    username = data.get('username')
-    password = data.get('password')
-
-    # Validate username and password
-    if not username or not password:
-        return jsonify({'message': 'Username and password are required'}), 400
-
-    # Create a new user object
-    new_user = User(username=username, password=password)
-
-    # Save the user to the database
-    try:
-        new_user.save()
-        return jsonify({'message': 'User registered successfully'}), 201
-    except Exception as e:
-        return jsonify({'message': 'Failed to register user', 'error': str(e)}), 500
-
 
 # API docs https://flask-restful.readthedocs.io/en/latest/api.html
 api = Api(user_api)
