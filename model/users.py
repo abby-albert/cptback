@@ -36,6 +36,9 @@ def initUsers():
 
         # Check if username already exists
         existing_user = User.query.filter_by(uid=uid).first()
+        if existing_user:
+            return jsonify({'message': 'Uid and password are already in use'})
+    
         if not existing_user:
             # Create new user
             new_user = User(name=name, uid=uid, password=password)
