@@ -146,16 +146,4 @@ class UserAPI:
     api.add_resource(_CRUD, '/')
     api.add_resource(_Security, '/authenticate')
 
-    class _Create(Resource):
-        def post(self):
-            body = request.get_json()
-            name = body.get('name')
-            uid = body.get('uid')
-            password = body.get('password')
-            if uid is not None:
-                new_user = User(name=name, uid=uid, password=password)
-            user = new_user.create()
-            if user:
-                return user.read()
-            return {'uid is possibly a dupe'}, 400
-    api.add_resource(_Create, '/create')
+ 
