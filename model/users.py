@@ -230,7 +230,7 @@ def initUsers():
 
         u1 = User(name='Scottie Scheffler', uid='scottie', password='123scottie', dob=date(1847, 2, 11), hashmap={"job": "golfer on PGA"}, role="Admin")
         u2 = User(name='Nelly Korda', uid='nelly', password='123nelly', dob=date(1856, 7, 10), hashmap={"job": "golfer on LPGA"})
-        u3 = User(name='Tiger Woods', uid='tiger', password='123tiger', dob=date(1975, 30, 12), hashmap={"job": "golfer on PGA"})
+        u3 = User(name='Tiger Woods', uid='tiger', password='123tiger', dob=date(1975, 12, 30), hashmap={"job": "golfer on PGA"})
         u4 = User(name='Justin Thomas', uid='jt', password='123hop', dob=date(1906, 12, 9), hashmap={"job": "golfer on PGA"})
         users = [u1, u2, u3, u4]
 ## code modeled from teacher structure
