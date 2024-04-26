@@ -39,13 +39,6 @@ def predict_probability():
 if __name__ == '__main__':
     app.run(debug=True)
 
-dt.fit(X_train, y_train)
-
-# Test the model
-y_pred = dt.predict(X_test)
-mse = mean_squared_error(y_test, y_pred)
-print('Mean Squared Error:', mse)
-
 # Fetch: In the frontend JavaScript code, fetch() is used to send a POST request to the /predict_probability
 # endpoint of the Flask server. This request includes data about the subject, attention, and solutions input
 # provided by the user. The server processes this data and returns a response containing the calculated probability.
