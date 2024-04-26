@@ -76,55 +76,62 @@ class UserAPI:
             # 204 is the status code for delete with no json response
             return f"Deleted user: {json}", 204 # use 200 to test with Postman
          
-    class _Security(Resource):
-        def post(self): 
-            try:
-                body = request.get_json()
-                if not body:
-                    return {
-                        "message": "Please provide user details",
-                        "data": None,
-                        "error": "Bad request"
-                    }, 400
-                uid = body.get('uid')
-                if uid is None: 
-                    return {'message': f'User ID is missing'}, 400
-                password = body.get('password')
-                user = User.query.filter_by(_uid=uid).first()
-                if user is None or not user.is_password(password):
-                    return {'message': f"Invalid user id or password"}, 400
-                if user:
-                    try:
-                        token = jwt.encode(
-                            {"_uid": user._uid},
-                            current_app.config["SECRET_KEY"],
-                            algorithm="HS256"
-                        )
-                        resp = Response("Authentication for %s successful" % (user._uid))
-                        resp.set_cookie("jwt", token,
-                                max_age=3600,
-                                secure=True,
-                                httponly=True,
-                                path='/',
-                                samesite='None'  
-                                )
-                        return resp
-                    except Exception as e:
-                        return {
-                            "error": "Something went wrong",
-                            "message": str(e)
-                        }, 500
+class Security(Resource):
+    def post(self):
+        try:
+            body = request.get_json()
+            if not body:
                 return {
-                    "message": "Error fetching auth token!",
+                    "message": "Please provide user details",
                     "data": None,
-                    "error": "Unauthorized"
-                }, 404
-            except Exception as e:
-                return {
-                        "message": "Something went wrong!",
-                        "error": str(e),
-                        "data": None
-                }, 500
+                    "error": "Bad request"
+                }, 400
+            
+            uid = body.get('uid')
+            if uid is None:
+                return {'message': f'Input your UID'}, 400
+            
+            password = body.get('password')
+            user = User.query.filter_by(_uid=uid).first()
+            
+            if user is None or not user.is_password(password):
+                return {'message': f"UID or password are not valid."}, 400
+            
+            if user:
+                try:
+                    token = jwt.encode(
+                        {"_uid": user._uid},
+                        current_app.config["SECRET_KEY"],
+                        algorithm="HS256"
+                    )
+                    resp = Response(f"{user._uid}'s authentication was a success")
+                    resp.set_cookie("jwt", token,
+                                    max_age=3600,
+                                    secure=True,
+                                    httponly=True,
+                                    path='/',
+                                    samesite='None'  
+                                    )
+                    return resp
+                
+                except Exception as e:
+                    return {
+                        "error": "Something went wrong",
+                        "message": str(e)
+                    }, 500
+                
+            return {
+                "message": "Wasn't able to fetch authentication token",
+                "data": None,
+                "error": "Unauthorized"
+            }, 404
+        
+        except Exception as e:
+            return {
+                    "message": "Something went wrong!",
+                    "error": str(e),
+                    "data": None
+            }, 500
 
             
     # building RESTapi endpoint
