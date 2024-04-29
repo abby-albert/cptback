@@ -26,9 +26,9 @@ class UserAPI:
             name = body.get('name')
             if name is None or len(name) < 2:
                 return {'message': f'Name is missing, or is less than 2 characters'}, 400
-            # validate username
-            username = body.get('username')
-            if username is None or len(username) < 2:
+            # validate uid
+            uid = body.get('uid')
+            if uid is None or len(uid) < 2:
                 return {'message': f'User ID is missing, or is less than 2 characters'}, 400
             # look for password and dob
             password = body.get('password')
@@ -36,7 +36,7 @@ class UserAPI:
 
             ''' #1: Key code block, setup USER OBJECT '''
             uo = User(name=name, 
-                      username=username)
+                      uid=uid)
             
             ''' Additional garbage error checking '''
             # set password if provided
@@ -56,7 +56,7 @@ class UserAPI:
             if user:
                 return jsonify(user.read())
             # failure returns error
-            return {'message': f'Processed {name}, either a format error or User ID {username} is duplicate'}, 400
+            return {'message': f'Processed {name}, either a format error or User ID {uid} is duplicate'}, 400
 
         @token_required()
         def get(self, _): # Read Method, the _ indicates current_user is not used
@@ -67,10 +67,10 @@ class UserAPI:
         @token_required("Admin")
         def delete(self, _): # Delete Method
             body = request.get_json()
-            username = body.get('username')
-            user = User.query.filter_by(_username=username).first()
+            uid = body.get('uid')
+            user = User.query.filter_by(_uid=uid).first()
             if user is None:
-                return {'message': f'User {username} not found'}, 404
+                return {'message': f'User {uid} not found'}, 404
             json = user.read()
             user.delete() 
             # 204 is the status code for delete with no json response
@@ -86,21 +86,21 @@ class UserAPI:
                         "data": None,
                         "error": "Bad request"
                     }, 400
-                username = body.get('username')
-                if username is None: 
-                    return {'message': f'input your username'}, 400
+                uid = body.get('uid')
+                if uid is None: 
+                    return {'message': f'input your uid'}, 400
                 password = body.get('password')
-                user = User.query.filter_by(_username=username).first()
+                user = User.query.filter_by(_uid=uid).first()
                 if user is None or not user.is_password(password):
-                    return {'message': f"username or password are not validI"}, 400
+                    return {'message': f"uid or password are not validI"}, 400
                 if user:
                     try:
                         token = jwt.encode(
-                            {"_username": user._username},
+                            {"_uid": user._uid},
                             current_app.config["SECRET_KEY"],
                             algorithm="HS256"
                         )
-                        resp = Response("%s's authentication was a sucess" % (user._username))
+                        resp = Response("%s's authentication was a sucess" % (user._uid))
                         resp.set_cookie("jwt", token,
                                 max_age=3600,
                                 secure=True,

@@ -10,24 +10,24 @@ api = Api(app)
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(50), unique=True, nullable=False)
+    uid = db.Column(db.String(50), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
 
 class UserSignup(Resource):
     def post(self):
         parser = reqparse.RequestParser()
-        parser.add_argument('username', type=str, required=True, help='Username is required')
+        parser.add_argument('uid', type=str, required=True, help='uid is required')
         parser.add_argument('password', type=str, required=True, help='Password is required')
         args = parser.parse_args()
 
-        username = args['username']
+        uid = args['uid']
         password = args['password']
 
-        if User.query.filter_by(username=username).first():
-            return {'message': 'Username already exists'}, 409
+        if User.query.filter_by(uid=uid).first():
+            return {'message': 'uid already exists'}, 409
 
         hashed_password = generate_password_hash(password)
-        new_user = User(username=username, password=hashed_password)
+        new_user = User(uid=uid, password=hashed_password)
         db.session.add(new_user)
         db.session.commit()
 

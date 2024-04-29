@@ -75,7 +75,7 @@ class User(db.Model):
     # Define the User schema with "vars" from object
     id = db.Column(db.Integer, primary_key=True)
     _name = db.Column(db.String(255), unique=False, nullable=False)
-    _username = db.Column(db.String(255), unique=True, nullable=False)
+    _uid = db.Column(db.String(255), unique=True, nullable=False)
     _password = db.Column(db.String(255), unique=False, nullable=False)
     _dob = db.Column(db.Date)
     _hashmap = db.Column(db.JSON, unique=False, nullable=True)
@@ -85,9 +85,9 @@ class User(db.Model):
     posts = db.relationship("Post", cascade='all, delete', backref='users', lazy=True)
 
     # constructor of a User object, initializes the instance variables within object (self)
-    def __init__(self, name, username, password="123qwerty", dob=date.today(), hashmap={}, role="User"):
+    def __init__(self, name, uid, password="123qwerty", dob=date.today(), hashmap={}, role="User"):
         self._name = name    # variables with self prefix become part of the object, 
-        self._username = username
+        self._uid = uid
         self.set_password(password)
         self._dob = dob
         self._hashmap = hashmap
@@ -105,17 +105,17 @@ class User(db.Model):
     
     # a getter method, extracts email from object
     @property
-    def username(self):
-        return self._username
+    def uid(self):
+        return self._uid
     
     # a setter function, allows name to be updated after initial object creation
-    @username.setter
-    def username(self, username):
-        self._username = username
+    @uid.setter
+    def uid(self, uid):
+        self._uid = uid
         
-    # check if username parameter matches user id in object, return boolean
-    def is_username(self, username):
-        return self._username == username
+    # check if uid parameter matches user id in object, return boolean
+    def is_uid(self, uid):
+        return self._uid == uid
     
     @property
     def password(self):
@@ -191,7 +191,7 @@ class User(db.Model):
         return {
             "id": self.id,
             "name": self.name,
-            "username": self.username,
+            "uid": self.uid,
             "dob": self.dob,
             "age": self.age,
             "hashmap": self._hashmap,
@@ -200,12 +200,12 @@ class User(db.Model):
 
     # CRUD update: updates user name, password, phone
     # returns self
-    def update(self, name="", username="", password=""):
+    def update(self, name="", uid="", password=""):
         """only updates values with length"""
         if len(name) > 0:
             self.name = name
-        if len(username) > 0:
-            self.username = username
+        if len(uid) > 0:
+            self.uid = uid
         if len(password) > 0:
             self.set_password(password)
         db.session.commit()
@@ -225,10 +225,10 @@ def initUsers():
     with app.app_context():
         """Create database and tables"""
         db.create_all()
-        u1 = User(name='Scottie Scheffler', username='scottie', password='123scottie', dob=date(1847, 2, 11), hashmap={"job": "golfer on PGA"}, role="Admin")
-        u2 = User(name='Nelly Korda', username='nelly', password='123nelly', dob=date(1856, 7, 10), hashmap={"job": "golfer on LPGA"})
-        u3 = User(name='Tiger Woods', username='tiger', password='123tiger', dob=date(1975, 12, 30), hashmap={"job": "golfer on PGA"})
-        u4 = User(name='Justin Thomas', username='jt', password='123hop', dob=date(1906, 12, 9), hashmap={"job": "golfer on PGA"})
+        u1 = User(name='Scottie Scheffler', uid='scottie', password='123scottie', dob=date(1847, 2, 11), hashmap={"job": "golfer on PGA"}, role="Admin")
+        u2 = User(name='Nelly Korda', uid='nelly', password='123nelly', dob=date(1856, 7, 10), hashmap={"job": "golfer on LPGA"})
+        u3 = User(name='Tiger Woods', uid='tiger', password='123tiger', dob=date(1975, 12, 30), hashmap={"job": "golfer on PGA"})
+        u4 = User(name='Justin Thomas', uid='jt', password='123hop', dob=date(1906, 12, 9), hashmap={"job": "golfer on PGA"})
         userdata = [u1, u2, u3, u4]
 
         for user in userdata:
@@ -241,4 +241,4 @@ def initUsers():
             except IntegrityError:
                 '''fails with bad or duplicate data'''
                 db.session.remove()
-                print(f"Records exist, duplicate email, or error: {user.username}")
+                print(f"Records exist, duplicate email, or error: {user.uid}")

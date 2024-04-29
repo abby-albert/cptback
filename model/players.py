@@ -17,14 +17,14 @@ class Player(db.Model):
     # Define the Player schema with "vars" from object
     id = db.Column(db.Integer, primary_key=True)
     _name = db.Column(db.String(255), unique=False, nullable=False)
-    _username = db.Column(db.String(255), unique=True, nullable=False)
+    _uid = db.Column(db.String(255), unique=True, nullable=False)
     _password = db.Column(db.String(255), unique=False, nullable=False)
     _tokens = db.Column(db.Integer)    
 
     # constructor of a Player object, initializes the instance variables within object (self)
-    def __init__(self, name, username, tokens, password="123qwerty"):
+    def __init__(self, name, uid, tokens, password="123qwerty"):
         self._name = name    # variables with self prefix become part of the object, 
-        self._username = username
+        self._uid = uid
         self.set_password(password)
         self._tokens = tokens
 
@@ -40,17 +40,17 @@ class Player(db.Model):
     
     # a getter method, extracts email from object
     @property
-    def username(self):
-        return self._username
+    def uid(self):
+        return self._uid
     
     # a setter function, allows name to be updated after initial object creation
-    @username.setter
-    def username(self, username):
-        self._username = username
+    @uid.setter
+    def uid(self, uid):
+        self._uid = uid
         
-    # check if username parameter matches user id in object, return boolean
-    def is_username(self, username):
-        return self._username == username
+    # check if uid parameter matches user id in object, return boolean
+    def is_uid(self, uid):
+        return self._uid == uid
     
     @property
     def password(self):
@@ -101,20 +101,20 @@ class Player(db.Model):
         return {
             "id": self.id,
             "name": self.name,
-            "username": self.username,
+            "uid": self.uid,
             "tokens": self.tokens,
             "password": self._password
         }
 
-    # CRUD update: updates name, username, password, tokens
+    # CRUD update: updates name, uid, password, tokens
     # returns self
     def update(self, dictionary):
         """only updates values in dictionary with length"""
         for key in dictionary:
             if key == "name":
                 self.name = dictionary[key]
-            if key == "username":
-                self.username = dictionary[key]
+            if key == "uid":
+                self.uid = dictionary[key]
             if key == "password":
                 self.set_password(dictionary[key])
             if key == "tokens":
@@ -141,11 +141,11 @@ def initPlayers():
         db.create_all()
         """Tester records for table"""
         players = [
-            Player(name='Azeem Khan', username='azeemK', tokens=45),
-            Player(name='Ahad Biabani', username='ahadB', tokens=41),
-            Player(name='Akshat Parikh', username='akshatP', tokens=40),
-            Player(name='Josh Williams', username='joshW', tokens=38),
-            Player(name='John Mortensen', username='johnM', tokens=35)
+            Player(name='Azeem Khan', uid='azeemK', tokens=45),
+            Player(name='Ahad Biabani', uid='ahadB', tokens=41),
+            Player(name='Akshat Parikh', uid='akshatP', tokens=40),
+            Player(name='Josh Williams', uid='joshW', tokens=38),
+            Player(name='John Mortensen', uid='johnM', tokens=35)
         ]
 
         """Builds sample user/note(s) data"""
@@ -155,4 +155,4 @@ def initPlayers():
             except IntegrityError:
                 '''fails with bad or duplicate data'''
                 db.session.remove()
-                print(f"Records exist, duplicate email, or error: {player.username}")
+                print(f"Records exist, duplicate email, or error: {player.uid}")
