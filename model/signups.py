@@ -10,15 +10,17 @@ from werkzeug.security import generate_password_hash, check_password_hash
 class Post(db.Model):
     __tablename__ = 'posts'
 
-    Username = db.Column(db.Text, unique=False, nullable=False)
-    Password = db.Column(db.Integer, primary_key=True)
- 
+    id = db.Column(db.Integer, primary_key=True)
+    note = db.Column(db.Text, unique=False, nullable=False)
+    image = db.Column(db.String, unique=False)
+    userID = db.Column(db.Integer, db.ForeignKey('users.id'))
+
     def __init__(self, note, image):
         self.note = note
         self.image = image
 
     def __repr__(self):
-        return f"Post(Username={self.Username}, Password={self.Password},"
+        return f"Post(id={self.id}, note={self.note}, image={self.image}, userID={self.userID})"
 
     def create(self):
         try:
@@ -37,6 +39,9 @@ class Post(db.Model):
             file_encode = base64.encodebytes(file_read).decode('utf-8')
 
         return {
-            "Username": self.Username,
-            "Password": self.Password,
+            "id": self.id,
+            "userID": self.userID,
+            "note": self.note,
+            "image": self.image,
+            "base64": file_encode
         }
