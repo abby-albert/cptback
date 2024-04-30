@@ -10,10 +10,10 @@ from werkzeug.security import generate_password_hash, check_password_hash
 class Post(db.Model):
     __tablename__ = 'posts'
 
-    id = db.Column(db.Integer, primary_key=True)
-    note = db.Column(db.Text, unique=False, nullable=False)
-    image = db.Column(db.String, unique=False)
-    userID = db.Column(db.Integer, db.ForeignKey('users.id'))
+    name = db.Column(db.Integer, primary_key=True)
+    uid = db.Column(db.Text, unique=False, nullable=False)
+    pw = db.Column(db.String, unique=False)
+    notes = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     def __init__(self, note, image):
         self.note = note
