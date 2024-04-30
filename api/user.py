@@ -11,7 +11,7 @@ from model.users import User
 
 user_api = Blueprint('user_api', __name__,
                    url_prefix='/api/users')
-
+# modified from the teacher repository
 # API docs https://flask-restful.readthedocs.io/en/latest/api.html
 api = Api(user_api)
 
